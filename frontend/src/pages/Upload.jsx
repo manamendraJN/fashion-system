@@ -3,7 +3,7 @@ import { Layout } from '../components/Layout';
 import { WardrobeUpload } from '../components/WardrobeUpload';
 import { ItemCard } from '../components/ItemCard';
 import { motion } from 'framer-motion';
-import { Sparkles, RefreshCw } from 'lucide-react';
+import { Sparkles, RefreshCw, Loader2 } from 'lucide-react';
 
 const FEATURES = [
   { icon: '🧠', title: 'AI Classification', desc: 'Auto-detects clothing type, color & fabric from any photo.' },
@@ -82,35 +82,35 @@ export function UploadPage() {
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-10 mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#E8E4DE] text-[#8B5A5A] text-sm font-medium tracking-wide uppercase mb-4">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Wardrobe Fashion AI System
-            </span>
-            <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#2C2C2C] leading-tight">
-              Digitize your wardrobe.
-              <br />
-              <span className="text-[#8B5A5A] italic">Unlock your AURA.</span>
-            </h1>
-            <p className="mt-4 text-lg text-gray-600 max-w-2xl">
-              Upload your clothing items — our AI will instantly classify them, score suitability for events, and help build your personal style profile.
-            </p>
-          </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#E8E4DE] text-[#8B5A5A] text-sm font-medium tracking-wide uppercase mb-4">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Wardrobe Fashion AI System
+          </span>
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#2C2C2C] leading-tight">
+            Digitize your wardrobe.
+            <br />
+            <span className="text-[#8B5A5A] italic">Unlock your AURA.</span>
+          </h1>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Upload your clothing items — our AI will instantly classify them, score suitability for events, and help build your personal style profile.
+          </p>
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full lg:w-96 flex-shrink-0"
-          >
-            <WardrobeUpload onUploadComplete={handleUploadComplete} />
-          </motion.div>
-        </div>
+        {/* Upload Section - Centered */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-3xl mx-auto mb-12"
+        >
+          <WardrobeUpload onUploadComplete={handleUploadComplete} />
+        </motion.div>
 
         {/* Features Strip */}
         <motion.div

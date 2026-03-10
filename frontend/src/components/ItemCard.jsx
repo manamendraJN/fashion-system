@@ -158,7 +158,7 @@ export function ItemCard({
       {/* Image container */}
       <div className="relative overflow-hidden bg-[#F8F5F0]" style={{ aspectRatio: '3/4' }}>
         <img
-          src={item.image}
+          src={`http://localhost:5000${item.url || item.image}`}
           alt={currentType || item.articleType || 'Wardrobe item'}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
@@ -227,7 +227,7 @@ export function ItemCard({
         {/* Type / editable */}
         {!isEditing ? (
           <h3 className={`font-serif font-semibold text-[#1E1E1E] leading-snug truncate ${compact ? 'text-[11px]' : 'text-[14px] mb-0.5'}`}>
-            {currentType || item.color ? `${item.color} ${item.articleType || 'Item'}` : 'Unknown Type'}
+            {currentType || item.articleType || 'Click edit to set type'}
           </h3>
         ) : (
           <div className="flex items-center gap-1.5 mb-2" onClick={(e) => e.stopPropagation()}>

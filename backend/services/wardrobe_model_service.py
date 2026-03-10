@@ -1,7 +1,7 @@
 """
 services/wardrobe_model_service.py
 Handles loading and inference for all wardrobe ML models.
-Compatible with TensorFlow 2.19 / Keras 3.10
+Compatible with TensorFlow 2.15 / Keras 2.15
 Mirrors logic from old project's models_loader.py (which works correctly)
 """
 
@@ -10,6 +10,7 @@ import pickle
 import logging
 from pathlib import Path
 from PIL import Image
+import tensorflow as tf
 from tensorflow import keras
 
 # Import improved event scoring from event_constants
@@ -41,16 +42,20 @@ class WardrobeModelService:
         try:
             logger.info("🧥 Loading wardrobe models...")
 
-            # ✅ Try .h5 first (works correctly), fallback to .keras
+            # ✅ Try .keras first (Keras 3.x compatible), fallback to .h5 with safe_mode
             cnn_h5    = self.model_dir / 'cnn_visual_features.h5'
             cnn_keras = self.model_dir / 'cnn_visual_features.keras'
 
-            if cnn_h5.exists():
-                self.cnn_model = keras.models.load_model(str(cnn_h5), compile=False)
-                logger.info("  ✅ CNN clothing classifier loaded (.h5)")
-            elif cnn_keras.exists():
-                self.cnn_model = keras.models.load_model(str(cnn_keras), compile=False)
-                logger.info("  ✅ CNN clothing classifier loaded (.keras)")
+            if cnn_keras.exists():
+                try:
+                    self.cnn_model = tf.keras.models.load_model(str(cnn_keras), compile=False)
+                    logger.info("  ✅ CNN clothing classifier loaded (.keras)")
+                except Exception as e:
+                    logger.warning(f"  ⚠️ Failed to load .keras format: {e}")
+                    if cnn_h5.exists():
+                        self._try_load_h5_model(cnn_h5)
+            elif cnn_h5.exists():
+                self._try_load_h5_model(cnn_h5)
             else:
                 logger.error("  ❌ CNN model not found")
 
@@ -58,17 +63,26 @@ class WardrobeModelService:
             gru_path  = self.model_dir / 'gru_temporal_patterns.keras'
             lstm_path = self.model_dir / 'lstm_temporal_patterns.keras'
             if gru_path.exists():
-                self.gru_model = keras.models.load_model(str(gru_path), compile=False)
-                logger.info("  ✅ GRU temporal model loaded")
+                try:
+                    self.gru_model = tf.keras.models.load_model(str(gru_path), compile=False)
+                    logger.info("  ✅ GRU temporal model loaded")
+                except Exception as e:
+                    logger.warning(f"  ⚠️ Failed to load GRU model: {e}")
             if lstm_path.exists():
-                self.lstm_model = keras.models.load_model(str(lstm_path), compile=False)
-                logger.info("  ✅ LSTM temporal model loaded")
+                try:
+                    self.lstm_model = tf.keras.models.load_model(str(lstm_path), compile=False)
+                    logger.info("  ✅ LSTM temporal model loaded")
+                except Exception as e:
+                    logger.warning(f"  ⚠️ Failed to load LSTM model: {e}")
 
             # Event model
             event_path = self.model_dir / 'event_association_model.keras'
             if event_path.exists():
-                self.event_model = keras.models.load_model(str(event_path), compile=False)
-                logger.info("  ✅ Event association model loaded")
+                try:
+                    self.event_model = tf.keras.models.load_model(str(event_path), compile=False)
+                    logger.info("  ✅ Event association model loaded")
+                except Exception as e:
+                    logger.warning(f"  ⚠️ Failed to load event model: {e}")
 
             # Encoders
             for attr, filename in [
@@ -79,16 +93,90 @@ class WardrobeModelService:
             ]:
                 path = self.model_dir / filename
                 if path.exists():
-                    with open(path, 'rb') as f:
-                        setattr(self, attr, pickle.load(f))
-                    logger.info(f"  ✅ {filename} loaded")
+                    try:
+                        with open(path, 'rb') as f:
+                            setattr(self, attr, pickle.load(f))
+                        logger.info(f"  ✅ {filename} loaded")
+                    except Exception as pkl_error:
+                        logger.warning(f"  ⚠️ Failed to load {filename}: {pkl_error}")
 
-            self._loaded = True
-            logger.info("🎉 All wardrobe models ready!")
+            # Mark as loaded if at least CNN model is available
+            if self.cnn_model is not None:
+                self._loaded = True
+                logger.info("🎉 Wardrobe models ready!")
+            else:
+                logger.warning("⚠️ CNN model failed to load, service partially available")
+                self._loaded = False
 
         except Exception as e:
             logger.error(f"❌ Failed to load wardrobe models: {e}")
             self._loaded = False
+
+    def _try_load_h5_model(self, h5_path):
+        """Try loading .h5 model with compatibility for Keras 2.x and batch_shape issues"""
+        try:
+            # Keras 2.x: Load h5 model
+            # Note: Some models saved with batch_shape may have compatibility issues
+            self.cnn_model = tf.keras.models.load_model(str(h5_path), compile=False)
+            logger.info("  ✅ CNN clothing classifier loaded (.h5)")
+        except Exception as e:
+            error_str = str(e)
+            if 'batch_shape' in error_str:
+                logger.warning(f"  ⚠️ batch_shape incompatibility detected")
+                # Try using h5py to manually load and rebuild
+                try:
+                    self._load_h5_with_custom_config(h5_path)
+                    logger.info("  ✅ CNN clothing classifier loaded with custom config")
+                except Exception as e2:
+                    logger.error(f"  ❌ Failed to load with custom config: {e2}")
+            else:
+                logger.error(f"  ❌ Failed to load .h5 model: {e}")
+    
+    def _load_h5_with_custom_config(self, h5_path):
+        """Load h5 model with custom deserialization to handle batch_shape"""
+        try:
+            import h5py
+            import json
+            
+            # Read the model config
+            with h5py.File(str(h5_path), 'r') as f:
+                model_config_str = f.attrs.get('model_config')
+                if model_config_str:
+                    model_config = json.loads(model_config_str)
+                    
+                    # Fix batch_shape -> shape in input layers
+                    self._fix_batch_shape_in_config(model_config)
+                    
+                    # Reconstruct model from modified config
+                    self.cnn_model = tf.keras.models.model_from_json(json.dumps(model_config))
+                    
+                    # Load weights
+                    self.cnn_model.load_weights(str(h5_path))
+        except ImportError as e:
+            logger.error(f"  ❌ h5py not available: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"  ❌ Failed to load with custom config: {e}")
+            raise
+    
+    def _fix_batch_shape_in_config(self, config):
+        """Recursively fix batch_shape parameter in model config"""
+        if isinstance(config, dict):
+            # Fix InputLayer batch_shape -> shape
+            if config.get('class_name') == 'InputLayer' and 'batch_shape' in config.get('config', {}):
+                batch_shape = config['config'].pop('batch_shape')
+                if batch_shape and len(batch_shape) > 1:
+                    # Convert [None, 224, 224, 3] -> [224, 224, 3]
+                    config['config']['shape'] = batch_shape[1:]
+            
+            # Recursively fix nested structures
+            for key, value in config.items():
+                if isinstance(value, (dict, list)):
+                    self._fix_batch_shape_in_config(value)
+        elif isinstance(config, list):
+            for item in config:
+                if isinstance(item, (dict, list)):
+                    self._fix_batch_shape_in_config(item)
 
     # ─────────────────────────── Image Preprocessing ────────────────
 
