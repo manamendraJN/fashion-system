@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import { UploadPage } from './pages/Upload';
 import { ChatPage } from './pages/Chat';
 import { AnalyticsPage } from './pages/Analytics';
