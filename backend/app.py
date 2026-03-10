@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configure CORS – production version + mobile tunnel support
+# Configure CORS – allow only known origins (set CORS_ORIGINS in Config)
 CORS(app,
-     resources={r"/*": {"origins": "*"}},     # ← tighten this later (use Config.CORS_ORIGINS)
+     resources={r"/*": {"origins": Config.CORS_ORIGINS}},
      supports_credentials=True,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]

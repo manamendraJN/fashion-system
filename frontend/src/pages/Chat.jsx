@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Layout } from '../components/Layout';
 import { ChatMessage } from '../components/ChatMessage';
 import { UserStyleProfile } from '../components/UserStyleProfile';
+import { API_BASE_URL } from '../services/api';
 import {
   Send,
   Sparkles,
@@ -95,7 +96,7 @@ export function ChatPage() {
 
   // Fetch wardrobe once on mount
   useEffect(() => {
-    fetch('http://localhost:5000/api/wardrobe')
+    fetch(API_BASE_URL + '/api/wardrobe')
       .then((r) => r.json())
       .then(setWardrobe)
       .catch((err) => console.error('Failed to load wardrobe:', err));
@@ -156,7 +157,7 @@ export function ChatPage() {
 
     if (occasion) {
       try {
-        const res = await fetch('http://localhost:5000/api/recommend-smart', {
+        const res = await fetch(API_BASE_URL + '/api/recommend-smart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ occasion: occasion.value, weather: weather || null }),
@@ -167,7 +168,7 @@ export function ChatPage() {
         const data = await res.json();
 
         if (data.success && data.recommendations?.length > 0) {
-          suggestions = data.recommendations.map((i) => ({ ...i, image: `http://localhost:5000${i.url}` }));
+          suggestions = data.recommendations.map((i) => ({ ...i, image: `${API_BASE_URL}${i.url}` }));
 
           const weatherLine = weather ? ` · ${weather === 'cold' ? '❄️ Cold' : weather === 'hot' ? '☀️ Hot' : '🌧️ Rainy'} weather` : '';
 
@@ -189,7 +190,7 @@ export function ChatPage() {
         // Fallback to local filter
         suggestions = wardrobe
           .filter((item) => item.eventScores?.[occasion.value] > 0.65)
-          .map((i) => ({ ...i, image: `http://localhost:5000${i.url}` }));
+          .map((i) => ({ ...i, image: `${API_BASE_URL}${i.url}` }));
       }
     } else {
       responseContent =
@@ -213,7 +214,7 @@ export function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] flex flex-col" style={{ height: '100vh' }}>
+    <>
       <Layout>
         <div className="flex gap-6 h-[calc(100vh-96px)]">
           {/* Left Sidebar – Events & Weather */}
@@ -423,7 +424,7 @@ export function ChatPage() {
                     >
                       <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#F5F0EB] flex-shrink-0 border border-[#EDE8E0]">
                         <img
-                          src={`http://localhost:5000${item.url}`}
+                          src={`${API_BASE_URL}${item.url}`}
                           alt={item.type}
                           className="w-full h-full object-cover"
                         />
@@ -454,6 +455,6 @@ export function ChatPage() {
       <AnimatePresence>
         {showStyleProfile && <UserStyleProfile onClose={() => setShowStyleProfile(false)} />}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

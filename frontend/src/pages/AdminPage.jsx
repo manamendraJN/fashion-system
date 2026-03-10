@@ -3,6 +3,7 @@ import { Layout } from '../components/Layout';
 import { ComprehensiveView } from '../components/ComprehensiveView';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Database, Package, Grid, Ruler, Users, Search, X, Plus, Check, AlertCircle, Table, Trash2 } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 // Modal Component (extracted to prevent re-creation on every render)
 const Modal = ({ isOpen, onClose, title, children }) => (
@@ -94,7 +95,7 @@ export function AdminPage() {
   const fetchDatabaseOverview = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/admin/database-overview');
+      const response = await fetch(API_BASE_URL + '/api/admin/database-overview');
       if (!response.ok) {
         throw new Error('Failed to fetch database overview');
       }
@@ -155,7 +156,7 @@ export function AdminPage() {
         size: `/api/admin/sizes/${id}`
       };
       
-      const response = await fetch(`http://localhost:5000${endpoints[type]}`, {
+      const response = await fetch(`${API_BASE_URL}${endpoints[type]}`, {
         method: 'DELETE'
       });
       
@@ -180,7 +181,7 @@ export function AdminPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/brands', {
+      const response = await fetch(API_BASE_URL + '/api/admin/brands', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(brandForm)
@@ -206,7 +207,7 @@ export function AdminPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/categories', {
+      const response = await fetch(API_BASE_URL + '/api/admin/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryForm)
@@ -232,7 +233,7 @@ export function AdminPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/size-charts', {
+      const response = await fetch(API_BASE_URL + '/api/admin/size-charts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -275,7 +276,7 @@ export function AdminPage() {
         }
       });
 
-      const response = await fetch('http://localhost:5000/api/admin/sizes', {
+      const response = await fetch(API_BASE_URL + '/api/admin/sizes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -13,8 +13,6 @@ from PIL import Image
 from tensorflow import keras
 
 # Import improved event scoring from event_constants
-import sys
-sys.path.append(str(Path(__file__).parent.parent))
 from core.event_constants import get_default_event_scores, STANDARD_EVENTS
 
 logger = logging.getLogger(__name__)

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Info, AlertTriangle, Ruler, TrendingUp, Shirt } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 /**
  * SizeRecommendation Component
@@ -22,7 +23,7 @@ const SizeRecommendation = ({ measurements, selectedBrand, selectedCategory }) =
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/size/recommend', {
+      const response = await fetch(API_BASE_URL + '/api/size/recommend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ const SizeRecommendation = ({ measurements, selectedBrand, selectedCategory }) =
       
       console.log('Request body:', requestBody);
       
-      const response = await fetch('http://localhost:5000/api/size/recommend/multiple-brands', {
+      const response = await fetch(API_BASE_URL + '/api/size/recommend/multiple-brands', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

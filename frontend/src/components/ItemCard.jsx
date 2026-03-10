@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Check, Sparkles, Heart, ThumbsDown, Edit2, X, Trash2, Tag, Calendar } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 const CLOTHING_TYPES = [
   'Blouse', 'Dresses', 'Jeans', 'Trousers', 'Shorts', 'Skirts',
@@ -62,7 +63,7 @@ export function ItemCard({
   const handleToggleFavorite = async (e) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://localhost:5000/api/wardrobe/${item.id}/favorite`, {
+      const res = await fetch(`${API_BASE_URL}/api/wardrobe/${item.id}/favorite`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -80,7 +81,7 @@ export function ItemCard({
   const handleToggleDislike = async (e) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`http://localhost:5000/api/wardrobe/${item.id}/dislike`, {
+      const res = await fetch(`${API_BASE_URL}/api/wardrobe/${item.id}/dislike`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -101,7 +102,7 @@ export function ItemCard({
       return;
     }
     try {
-      const res = await fetch(`http://localhost:5000/api/wardrobe/${item.id}/update-type`, {
+      const res = await fetch(`${API_BASE_URL}/api/wardrobe/${item.id}/update-type`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: editedType }),
@@ -121,7 +122,7 @@ export function ItemCard({
     e.stopPropagation();
     if (!window.confirm(`Delete "${currentType || 'this item'}"?`)) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/wardrobe/${item.id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/wardrobe/${item.id}`, { method: 'DELETE' });
       if (res.ok) {
         if (onDelete) onDelete(item.id);
       } else {

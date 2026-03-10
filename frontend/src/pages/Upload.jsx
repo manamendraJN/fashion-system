@@ -4,6 +4,7 @@ import { WardrobeUpload } from '../components/WardrobeUpload';
 import { ItemCard } from '../components/ItemCard';
 import { motion } from 'framer-motion';
 import { Sparkles, RefreshCw } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 const FEATURES = [
   { icon: '🧠', title: 'AI Classification', desc: 'Auto-detects clothing type, color & fabric from any photo.' },
@@ -20,7 +21,7 @@ export function UploadPage() {
   const fetchWardrobe = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/wardrobe');
+      const res = await fetch(API_BASE_URL + '/api/wardrobe');
       const data = await res.json();
       if (Array.isArray(data)) {
         setItems(data);
@@ -59,7 +60,7 @@ export function UploadPage() {
     if (!window.confirm('Recalculate event scores for all items? This may take a moment.')) return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/wardrobe/recalculate-all', {
+      const res = await fetch(API_BASE_URL + '/api/wardrobe/recalculate-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -175,7 +176,7 @@ export function UploadPage() {
               {filteredItems.map((item, index) => (
                 <ItemCard
                   key={item.id || index}
-                  item={{ ...item, image: `http://localhost:5000${item.url || item.image}` }}
+                  item={{ ...item, image: `${API_BASE_URL}${item.url || item.image}` }}
                   index={index}
                   onTypeUpdate={handleTypeUpdate}
                   onDelete={handleDelete}
