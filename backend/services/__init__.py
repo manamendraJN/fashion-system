@@ -1,14 +1,21 @@
-"""
-Business logic services
-"""
+# Core inference & processing
 from .model_service import ModelInference
 from .image_service import image_processor
 from .hf_service import hf_manager
-from .wardrobe_model_service import WardrobeModelService    # NEW
+
+# Feature-specific services
+from .wardrobe_model_service import WardrobeModelService          # Wardrobe AI
+from .size_matching_service import size_matching_service, SizeMatchingService   # Size matching
+
 
 __all__ = [
+    # Core
     'ModelInference',
     'image_processor',
     'hf_manager',
-    'WardrobeModelService',                                 # NEW
+    
+    # Features
+    'WardrobeModelService',
+    'size_matching_service',
+    'SizeMatchingService',
 ]

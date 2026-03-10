@@ -2,22 +2,27 @@ from flask import Flask
 from flask_cors import CORS
 import os
 import logging
+
 from core.config import Config
 from services.model_service import ModelInference
 from services.image_service import image_processor
-from services.wardrobe_model_service import WardrobeModelService        # NEW
+from services.wardrobe_model_service import WardrobeModelService   # NEW
 
 # Import route blueprints
 from routes import (
     general_bp,
     model_bp,
     analysis_bp,
+    size_bp,
     init_general_routes,
     init_model_routes,
     init_analysis_routes,
+    init_size_routes,
     register_error_handlers
 )
-from routes.wardrobe_routes import wardrobe_bp, init_wardrobe_routes    # NEW
+from routes.wardrobe_routes import wardrobe_bp, init_wardrobe_routes   # NEW
+from routes.admin_routes import admin_bp
+
 
 # Configure logging
 logging.basicConfig(
@@ -26,20 +31,30 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, origins=Config.CORS_ORIGINS)
+
+# Configure CORS – production version + mobile tunnel support
+CORS(app,
+     resources={r"/*": {"origins": "*"}},     # ← tighten this later (use Config.CORS_ORIGINS)
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
+
 
 # Initialize services
-logger.info("🚀 Initializing Fashion Intelligence Platform...")
+logger.info("🚀 Initializing Fashion Intelligence Platform / Body Measurement AI API...")
 logger.info(f"📍 Model directory: {Config.MODEL_DIR}")
 
-# Check if models exist
+# Ensure model directory exists
 if not Config.MODEL_DIR.exists():
     logger.info(f"⚠️ Creating model directory: {Config.MODEL_DIR}")
     Config.MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
-# ── Load existing body measurement model ────────────────────────────
+
+# Load main model (body measurement / fashion)
 selected_model = os.getenv('MODEL_NAME', Config.DEFAULT_MODEL)
 if selected_model != Config.DEFAULT_MODEL:
     logger.info(f"🔄 Using model from environment: {selected_model}")
@@ -49,12 +64,13 @@ try:
         model_name=selected_model,
         device='cuda' if os.getenv('USE_GPU', 'False') == 'True' else 'cpu'
     )
-    logger.info(f"✅ Body measurement model loaded: {selected_model}")
+    logger.info(f"✅ Model loaded: {selected_model}")
 except Exception as e:
-    logger.error(f"❌ Error loading body measurement model: {e}")
+    logger.error(f"❌ Error loading model: {e}")
     model_inference = None
 
-# ── Load wardrobe AI models (NEW) ────────────────────────────────────
+
+# Load wardrobe AI models (NEW feature)
 try:
     wardrobe_service = WardrobeModelService(Config.WARDROBE_MODEL_DIR)
     logger.info("✅ Wardrobe AI models loaded!")
@@ -62,26 +78,30 @@ except Exception as e:
     logger.error(f"❌ Error loading wardrobe models: {e}")
     wardrobe_service = None
 
+
 logger.info("✅ API initialized successfully!")
 
-# ── Initialize existing routes ───────────────────────────────────────
+
+# Initialize routes with dependencies
 init_general_routes(model_inference)
 init_model_routes(model_inference, image_processor)
 init_analysis_routes(model_inference)
+init_size_routes()               # from production branch
+init_wardrobe_routes(wardrobe_service)   # NEW from wardrobe branch
 
-# ── Initialize wardrobe routes (NEW) ────────────────────────────────
-init_wardrobe_routes(wardrobe_service)
 
-# ── Register existing blueprints ─────────────────────────────────────
+# Register blueprints
 app.register_blueprint(general_bp)
 app.register_blueprint(model_bp)
 app.register_blueprint(analysis_bp)
+app.register_blueprint(size_bp,   url_prefix='/api/size')
+app.register_blueprint(wardrobe_bp)                 # NEW
+app.register_blueprint(admin_bp,  url_prefix='/api/admin')
 
-# ── Register wardrobe blueprint (NEW) ───────────────────────────────
-app.register_blueprint(wardrobe_bp)
 
 # Register error handlers
 register_error_handlers(app)
+
 
 # Run server
 if __name__ == '__main__':
