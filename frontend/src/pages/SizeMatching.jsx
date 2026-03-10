@@ -3,6 +3,7 @@ import { Upload, Ruler, Shirt, CheckCircle, Calendar, AlertCircle, RefreshCw, Ar
 import { useNavigate } from 'react-router-dom';
 import SizeRecommendation from '../components/SizeRecommendation';
 import { Layout } from '../components/Layout';
+import { API_BASE_URL } from '../services/api';
 
 /**
  * SizeMatching Page
@@ -27,9 +28,9 @@ const SizeMatching = () => {
       setLoadingMeasurements(true);
       try {
         const [measurementsRes, brandsRes, categoriesRes] = await Promise.all([
-          fetch('http://localhost:5000/api/size/measurements/latest?user_identifier=default&max_age_days=90'),
-          fetch('http://localhost:5000/api/size/brands'),
-          fetch('http://localhost:5000/api/size/categories')
+          fetch(API_BASE_URL + '/api/size/measurements/latest?user_identifier=default&max_age_days=90'),
+          fetch(API_BASE_URL + '/api/size/brands'),
+          fetch(API_BASE_URL + '/api/size/categories')
         ]);
 
         const measurementsData = await measurementsRes.json();

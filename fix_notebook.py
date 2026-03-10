@@ -13,7 +13,7 @@ def find_notebooks():
     # Walk through all directories
     for root, dirs, files in os.walk(current_dir):
         # Skip hidden and checkpoint directories
-        dirs[:] = [d for d in dirs if not d.startswith('.') and 'checkpoint' not in d. lower()]
+        dirs[:] = [d for d in dirs if not d.startswith('.') and 'checkpoint' not in d.lower()]
         
         for file in files:
             if file.endswith('.ipynb') and 'checkpoint' not in file.lower():
@@ -60,8 +60,8 @@ def main():
     notebooks = find_notebooks()
     
     if not notebooks:
-        print("\n❌ No . ipynb files found!")
-        print("\n💡 Make sure you have . ipynb files in this directory or subdirectories")
+        print("\n❌ No .ipynb files found!")
+        print("\n💡 Make sure you have .ipynb files in this directory or subdirectories")
         print(f"📁 Current directory: {os.getcwd()}")
         return
     

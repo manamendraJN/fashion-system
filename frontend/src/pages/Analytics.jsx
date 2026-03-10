@@ -21,6 +21,7 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { Shirt, Calendar, Target, TrendingUp, RefreshCw, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 // Mock fallback data (in case backend is down)
 const MOCK_DATA = {
@@ -71,7 +72,7 @@ export function AnalyticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/analytics');
+      const response = await fetch(API_BASE_URL + '/api/analytics');
       if (!response.ok) throw new Error('Failed to fetch analytics');
       const data = await response.json();
       setAnalytics(data);

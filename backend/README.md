@@ -278,16 +278,22 @@ See [backend/requirements.txt](backend/requirements.txt) for complete list.
 ### Frontend Dependencies
 
 Core dependencies: 
-- **react** (^18.2.0) - UI library
-- **react-dom** (^18.2.0) - React DOM rendering
-- **axios** (^1.5.0) - HTTP client for API calls
-- **lucide-react** (^0.263.1) - Icon library
-- **tailwindcss** (^4.0.0-beta.4) - Utility-first CSS
-- **@tailwindcss/vite** (^4.0.0-beta.4) - Tailwind Vite plugin
+- **react** (^19.2.0) - UI library
+- **react-dom** (^19.2.0) - React DOM rendering
+- **react-router-dom** (^7.11.0) - Client-side routing
+- **framer-motion** (^12.24.5) - Animation library
+- **lucide-react** (^0.562.0) - Icon library
+- **recharts** (^3.6.0) - Charting library
+- **react-dropzone** (^14.3.8) - File drag-and-drop
+- **axios** (^1.13.2) - HTTP client for API calls
+- **clsx** (^2.1.1) - Conditional class names
+- **tailwind-merge** (^3.5.0) - Tailwind class merging
+- **tailwindcss** (^4.1.17) - Utility-first CSS
+- **@tailwindcss/vite** (^4.1.17) - Tailwind Vite plugin
 
 Dev dependencies:
-- **vite** (^4.4.9) - Build tool and dev server
-- **@vitejs/plugin-react** (^4.0.4) - React plugin for Vite
+- **vite** (^7.2.4) - Build tool and dev server
+- **@vitejs/plugin-react** (^5.1.1) - React plugin for Vite
 
 See [frontend/package.json](frontend/package.json) for complete list.
 

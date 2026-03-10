@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, Loader2, CheckCircle2, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
+import { API_BASE_URL } from '../services/api';
 
 export function WardrobeUpload({ onUploadComplete }) {
   const [isUploading, setIsUploading] = useState(false);
@@ -28,7 +29,7 @@ export function WardrobeUpload({ onUploadComplete }) {
         fd.append('image', file);
 
         try {
-          const res = await fetch('http://localhost:5000/api/predict/clothing-type', {
+          const res = await fetch(API_BASE_URL + '/api/predict/clothing-type', {
             method: 'POST',
             body: fd,
           });

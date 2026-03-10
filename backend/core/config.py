@@ -76,7 +76,7 @@ class Config:
     ]
 
     # ── Wardrobe AI Configuration (NEW feature) ────────────────────────────
-    WARDROBE_MODEL_DIR = BASE_DIR / 'models' / 'wardrobe models'
+    WARDROBE_MODEL_DIR = BASE_DIR / 'models' / 'wardrobe_models'
     WARDROBE_MODELS = {
         'cnn': 'cnn_visual_features.keras',
         'cnn_h5': 'cnn_visual_features.h5',

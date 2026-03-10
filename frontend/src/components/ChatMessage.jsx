@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { Sparkles, User, X } from 'lucide-react';
 import { ItemCard } from './ItemCard';
+import { API_BASE_URL } from '../services/api';
 
 export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdate }) {
   const isUser = role === 'user';
@@ -31,7 +32,7 @@ export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdat
 
   const handleMarkWorn = async (item) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/wardrobe/${item.id}/mark-worn`, {
+      const res = await fetch(`${API_BASE_URL}/api/wardrobe/${item.id}/mark-worn`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ occasion: 'Current Event', date: new Date().toISOString() }),
@@ -53,14 +54,14 @@ export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdat
 
   const handleFindPair = async (item) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/outfit-pairing/${item.id}`);
+      const res = await fetch(`${API_BASE_URL}/api/outfit-pairing/${item.id}`);
       const data = await res.json();
 
       if (data.success && data.matches?.length > 0) {
         setPairingResults({
-          selectedItem: { ...item, image: `http://localhost:5000${item.url || item.image}` },
+          selectedItem: { ...item, image: `${API_BASE_URL}${item.url || item.image}` },
           category: data.pairingCategory,
-          matches: data.matches.map((m) => ({ ...m, image: `http://localhost:5000${m.url}` })),
+          matches: data.matches.map((m) => ({ ...m, image: `${API_BASE_URL}${m.url}` })),
           message: data.message,
         });
       } else {
@@ -80,7 +81,7 @@ export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdat
     setSelectedPairingItem(pairItem.id);
 
     try {
-      const res = await fetch('http://localhost:5000/api/wardrobe/mark-pair-worn', {
+      const res = await fetch(API_BASE_URL + '/api/wardrobe/mark-pair-worn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -148,7 +149,7 @@ export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdat
           <span
             className={cn('text-[10px] text-gray-400 mt-1.5', isUser ? 'text-right' : 'text-left')}
           >
-            {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
 
           {/* Suggestions grid */}
@@ -256,9 +257,4 @@ export function ChatMessage({ role, content, suggestions, timestamp, onTypeUpdat
       </div>
     </motion.div>
   );
-}
-
-// Placeholder wrapper (replace with real AnimatePresence from framer-motion later if needed)
-function AnimatePresencePairing({ children }) {
-  return <>{children}</>;
 }

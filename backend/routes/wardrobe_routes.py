@@ -7,6 +7,8 @@ from flask import Blueprint, request, jsonify, send_from_directory
 import logging
 import io
 import os
+import time
+import uuid
 from PIL import Image
 from werkzeug.utils import secure_filename
 from pathlib import Path
@@ -67,8 +69,8 @@ def predict_and_save_clothing():
     try:
         # Save uploaded image
         filename = secure_filename(file.filename)
-        timestamp = int(os.path.getmtime(__file__) * 1000) if os.path.exists(__file__) else 0
-        unique_filename = f"{timestamp}_{filename}"
+        timestamp = int(time.time() * 1000)
+        unique_filename = f"{timestamp}_{uuid.uuid4().hex[:8]}_{filename}"
         filepath = UPLOAD_FOLDER / unique_filename
         file.save(filepath)
 
@@ -305,7 +307,7 @@ def recommend_smart():
                             # Try parsing with timezone
                             try:
                                 last_worn_date = datetime.fromisoformat(last_worn_str)
-                            except:
+                            except ValueError:
                                 # Fallback: try without timezone
                                 last_worn_date = datetime.fromisoformat(last_worn.split('T')[0])
                         else:

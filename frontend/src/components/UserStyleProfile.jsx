@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Heart, X } from 'lucide-react';
+import { API_BASE_URL } from '../services/api';
 
 export function UserStyleProfile({ onClose }) {
   const [profile, setProfile] = useState(null);
@@ -12,7 +13,7 @@ export function UserStyleProfile({ onClose }) {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/user-profile');
+      const response = await fetch(API_BASE_URL + '/api/user-profile');
       const data = await response.json();
       if (data.success) {
         setProfile(data.profile);
