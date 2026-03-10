@@ -51,7 +51,7 @@ class Config:
         }
     }
 
-    DEFAULT_MODEL = 'model_v1'   # ← balanced choice; change to model_v2 or model_v3 if needed
+    DEFAULT_MODEL = 'model_v3'   # ← balanced choice; change to model_v2 or model_v3 if needed
 
     # Image Configuration
     IMG_SIZE = (512, 384)  # height, width

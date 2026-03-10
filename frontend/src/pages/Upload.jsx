@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import { Sparkles, RefreshCw, Loader2 } from 'lucide-react';
 
 const FEATURES = [
-  { icon: '🧠', title: 'AI Classification', desc: 'Auto-detects clothing type, color & fabric from any photo.' },
-  { icon: '🎯', title: 'Event Scoring', desc: 'Rates each piece for office, casual, wedding & more.' },
-  { icon: '✨', title: 'Smart Pairing', desc: 'Suggests perfect outfit combos from your own wardrobe.' },
-  { icon: '📈', title: 'Style Analytics', desc: 'Tracks wear frequency & evolving personal style.' },
+  { title: 'AI Classification', desc: 'Auto-detects clothing type, color & fabric from any photo.' },
+  { title: 'Event Scoring', desc: 'Rates each piece for office, casual, wedding & more.' },
+  { title: 'Smart Pairing', desc: 'Suggests perfect outfit combos from your own wardrobe.' },
+  { title: 'Style Analytics', desc: 'Tracks wear frequency & evolving personal style.' },
 ];
 
 export function UploadPage() {

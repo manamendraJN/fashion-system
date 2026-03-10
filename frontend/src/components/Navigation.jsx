@@ -12,7 +12,7 @@ export function Navigation() {
     { path: '/analytics', label: 'Analytics', icon: BarChart2 },
     { path: '/measurements', label: 'Measurements', icon: Ruler },
     { path: '/size-matching', label: 'Size Matching', icon: Shirt },
-    { path: '/admin', label: 'Admin', icon: Database },
+    { path: '/admin', label: 'Size Charts', icon: Database },
   ];
 
   return (
